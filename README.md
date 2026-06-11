@@ -1,4 +1,4 @@
-# 🏥 MediAid — AI Health Assistant
+# MediAid — AI Health Assistant
 > **SDG 3: Good Health and Well-Being**
 
 ![MediAid Banner](screenshots/banner.png)
@@ -7,7 +7,7 @@ MediAid is a production-ready AI-powered health assistant that helps underserved
 
 ---
 
-## 🎯 SDG Alignment
+## SDG Alignment
 
 **Goal 3: Good Health and Well-Being**
 - Target 3.8: Achieve universal health coverage
@@ -15,7 +15,7 @@ MediAid is a production-ready AI-powered health assistant that helps underserved
 
 ---
 
-## 🚨 Problem Statement
+## Problem Statement
 
 **What:** Millions of people in low-income and rural regions lack access to basic healthcare guidance. They delay seeking help due to cost, distance, or lack of awareness — turning treatable conditions into emergencies.
 
@@ -29,24 +29,24 @@ MediAid is a production-ready AI-powered health assistant that helps underserved
 
 ---
 
-## ✨ Features
+## Features
 
 | # | Feature | Description |
 |---|---------|-------------|
-| 1 | 🤖 AI Symptom Checker | NLP-powered symptom analysis with urgency triage |
-| 2 | 💊 Medication Tracker | Smart reminders with adherence analytics |
-| 3 | 📊 Health Dashboard | Vitals tracking with trend visualization |
-| 4 | 🧠 Risk Prediction | ML model predicting diabetes/hypertension risk |
-| 5 | 📍 Nearby Clinics | Geo-location based clinic and pharmacy finder |
-| 6 | 🌐 Multi-language Support | English, Hindi, Swahili (Gemini translation) |
-| 7 | 📋 Health Reports | AI-generated PDF health summaries |
-| 8 | 🚨 Emergency SOS | One-tap emergency contact with location sharing |
-| 9 | 👤 Health Profile | Comprehensive personal health record |
-| 10 | 📈 Analytics Admin | Aggregated anonymized population health trends |
+| 1 | AI Symptom Checker | NLP-powered symptom analysis with urgency triage |
+| 2 | Medication Tracker | Smart reminders with adherence analytics |
+| 3 | Health Dashboard | Vitals tracking with trend visualization |
+| 4 | Risk Prediction | ML model predicting diabetes/hypertension risk |
+| 5 | Nearby Clinics | Geo-location based clinic and pharmacy finder |
+| 6 | Multi-language Support | English, Hindi, Swahili (Gemini translation) |
+| 7 | Health Reports | AI-generated PDF health summaries |
+| 8 | Emergency SOS | One-tap emergency contact with location sharing |
+| 9 | Health Profile | Comprehensive personal health record |
+| 10 | Analytics Admin | Aggregated anonymized population health trends |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -67,7 +67,7 @@ MediAid is a production-ready AI-powered health assistant that helps underserved
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -81,7 +81,7 @@ MediAid is a production-ready AI-powered health assistant that helps underserved
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 mediaid/
@@ -115,7 +115,7 @@ mediaid/
 
 ---
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -155,7 +155,7 @@ psql -U postgres -d mediaid -f database/schema.sql
 
 ---
 
-## 🔑 Environment Variables
+## Environment Variables
 
 ```env
 # Backend (.env)
@@ -172,7 +172,7 @@ VITE_FIREBASE_API_KEY=your_firebase_web_key
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|---------|-------------|
@@ -191,26 +191,13 @@ VITE_FIREBASE_API_KEY=your_firebase_web_key
 
 ---
 
-## 🔮 Future Scope
-
-- 📱 **React Native Mobile App** — iOS + Android
-- 🌍 **15+ language support** via Gemini multilingual models
-- 🩺 **Wearable Integration** — Apple Watch, Fitbit, Samsung Health
-- 🏥 **Telemedicine** — Live video consults with verified doctors
-- 🧬 **Genomics Risk** — DNA-based risk profiling
-- ☁️ **Cloud Deployment** — AWS/GCP with auto-scaling
-- 🤝 **NGO Partnerships** — Data sharing for public health research
-- 📡 **Offline Mode** — Service workers for low-connectivity regions
-
----
-
-## 📄 License
+## License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 - UN Sustainable Development Goals (SDGs)
 - WHO Global Health Observatory data
