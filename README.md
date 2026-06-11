@@ -1,7 +1,6 @@
 # MediAid — AI Health Assistant
 > **SDG 3: Good Health and Well-Being**
 
-![MediAid Banner](screenshots/banner.png)
 
 MediAid is a production-ready AI-powered health assistant that helps underserved communities access primary healthcare guidance, track symptoms, predict health risks, and connect with emergency services — all through an intelligent conversational interface.
 
