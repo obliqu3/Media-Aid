@@ -1057,6 +1057,76 @@
         padding: 16px;
       }
     }
+
+    /* ── AI INSIGHTS MODAL ─────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 79, 108, 0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-container {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 550px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 50px rgba(11, 79, 108, 0.15);
+      border: 1px solid var(--border);
+      transform: translateY(20px);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      padding: 24px;
+    }
+    .modal-overlay.active .modal-container {
+      transform: translateY(0);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--slate-light);
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .modal-close:hover {
+      color: var(--coral);
+    }
+    .modal-body {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--slate);
+    }
   </style>
 </head>
 
@@ -1113,9 +1183,12 @@
       </nav>
 
       <div class="sidebar-user">
-        <div class="user-avatar">AR</div>
+        <div class="user-avatar" id="sidebar-avatar-container" style="overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;">
+          <span id="sidebar-avatar-initials">AR</span>
+          <img id="sidebar-avatar-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;" />
+        </div>
         <div class="user-info">
-          <div class="user-name">Arjun Rao</div>
+          <div class="user-name" id="sidebar-user-name">Arjun Rao</div>
           <div class="user-role">Patient</div>
         </div>
       </div>
@@ -1128,7 +1201,7 @@
       <div id="page-dashboard">
         <div class="page-header">
           <div>
-            <div class="page-title">Good morning, Arjun 👋</div>
+            <div class="page-title" id="welcome-username">Good morning, Arjun 👋</div>
             <div class="page-subtitle">Wednesday, June 10, 2026 · Your health is looking stable</div>
           </div>
           <div class="header-actions">
@@ -1234,7 +1307,7 @@
                     <path d="M 15 85 A 65 65 0 0 1 145 85" stroke="#E2E8F0" stroke-width="12" fill="none"
                       stroke-linecap="round" />
                     <path d="M 15 85 A 65 65 0 0 1 145 85" stroke="url(#riskGrad)" stroke-width="12" fill="none"
-                      stroke-linecap="round" stroke-dasharray="204" stroke-dashoffset="80" />
+                      stroke-linecap="round" stroke-dasharray="204" stroke-dashoffset="80" id="db-risk-gauge-path" />
                     <defs>
                       <linearGradient id="riskGrad" x1="0" y1="0" x2="1" y2="0">
                         <stop offset="0%" stop-color="#26de81" />
@@ -1243,26 +1316,33 @@
                       </linearGradient>
                     </defs>
                     <text x="80" y="78" text-anchor="middle" font-family="Plus Jakarta Sans" font-size="22"
-                      font-weight="800" fill="#2D3748">37%</text>
-                    <text x="80" y="90" text-anchor="middle" font-family="Inter" font-size="9" fill="#718096">MODERATE
-                      RISK</text>
+                      font-weight="800" fill="#2D3748" id="db-overall-risk-val">37%</text>
+                    <text x="80" y="90" text-anchor="middle" font-family="Inter" font-size="9" fill="#718096" id="db-overall-risk-lvl">MODERATE RISK</text>
                   </svg>
                   <div class="risk-label-grid">
                     <div class="risk-item">
                       <div class="risk-name">Diabetes</div>
-                      <div class="risk-percent risk-moderate">42%</div>
+                      <div class="risk-percent risk-moderate" id="db-risk-diabetes">42%</div>
                     </div>
                     <div class="risk-item">
                       <div class="risk-name">Hypertension</div>
-                      <div class="risk-percent risk-moderate">35%</div>
+                      <div class="risk-percent risk-moderate" id="db-risk-hypertension">35%</div>
                     </div>
                     <div class="risk-item">
                       <div class="risk-name">Heart</div>
-                      <div class="risk-percent risk-low">22%</div>
+                      <div class="risk-percent risk-low" id="db-risk-heart">22%</div>
                     </div>
                     <div class="risk-item">
                       <div class="risk-name">Cholesterol</div>
-                      <div class="risk-percent risk-low">18%</div>
+                      <div class="risk-percent risk-low" id="db-risk-cholesterol">18%</div>
+                    </div>
+                    <div class="risk-item">
+                      <div class="risk-name">Kidney</div>
+                      <div class="risk-percent risk-low" id="db-risk-kidney">15%</div>
+                    </div>
+                    <div class="risk-item">
+                      <div class="risk-name">Liver</div>
+                      <div class="risk-percent risk-low" id="db-risk-liver">12%</div>
                     </div>
                   </div>
                 </div>
@@ -1273,35 +1353,11 @@
             <div class="card">
               <div class="card-header">
                 <span class="card-title">Today's Medications</span>
-                <span style="font-size:12px;color:var(--slate-light)">3 of 4 taken</span>
+                <span style="font-size:12px;color:var(--slate-light)" id="meds-taken-summary">All active</span>
               </div>
               <div class="card-body" style="padding:12px">
-                <div class="med-list">
-                  <div class="med-card" style="border-left: 3px solid var(--success)">
-                    <div class="med-icon">💊</div>
-                    <div class="med-info">
-                      <div class="med-name">Metformin 500mg</div>
-                      <div class="med-dose">After meals · Twice daily</div>
-                      <div class="med-times"><span class="time-chip">8:00 AM ✓</span><span class="time-chip"
-                          style="background:rgba(232,96,76,0.1);color:var(--coral)">8:00 PM</span></div>
-                    </div>
-                  </div>
-                  <div class="med-card" style="border-left: 3px solid var(--success)">
-                    <div class="med-icon">💉</div>
-                    <div class="med-info">
-                      <div class="med-name">Amlodipine 5mg</div>
-                      <div class="med-dose">Before breakfast · Once daily</div>
-                      <div class="med-times"><span class="time-chip">7:00 AM ✓</span></div>
-                    </div>
-                  </div>
-                  <div class="med-card" style="border-left: 3px solid var(--success)">
-                    <div class="med-icon">🩺</div>
-                    <div class="med-info">
-                      <div class="med-name">Vitamin D3 1000IU</div>
-                      <div class="med-dose">With lunch · Once daily</div>
-                      <div class="med-times"><span class="time-chip">1:00 PM ✓</span></div>
-                    </div>
-                  </div>
+                <div class="med-list" id="dashboard-med-list">
+                  <!-- Dynamically loaded -->
                 </div>
               </div>
             </div>
@@ -1570,7 +1626,7 @@
         <div class="page-header">
           <div>
             <div class="page-title">💊 Medication Tracker</div>
-            <div class="page-subtitle">87% adherence this month · 3 active medications</div>
+            <div class="page-subtitle" id="tracker-active-meds-subtitle">Active Medications</div>
           </div>
           <button class="btn btn-primary">+ Add Medication</button>
         </div>
@@ -1578,50 +1634,8 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
             <div>
               <div class="card-title" style="margin-bottom:12px">Active Medications</div>
-              <div class="med-list">
-                <div class="med-card">
-                  <div class="med-icon">💊</div>
-                  <div class="med-info">
-                    <div class="med-name">Metformin 500mg</div>
-                    <div class="med-dose">Twice daily · After meals</div>
-                    <div class="med-times">
-                      <span class="time-chip">8:00 AM</span>
-                      <span class="time-chip">8:00 PM</span>
-                    </div>
-                  </div>
-                  <div class="med-status">
-                    <div class="status-dot dot-active"></div>
-                    <div class="med-adherence">92%</div>
-                  </div>
-                </div>
-                <div class="med-card">
-                  <div class="med-icon">🔵</div>
-                  <div class="med-info">
-                    <div class="med-name">Amlodipine 5mg</div>
-                    <div class="med-dose">Once daily · Before breakfast</div>
-                    <div class="med-times">
-                      <span class="time-chip">7:00 AM</span>
-                    </div>
-                  </div>
-                  <div class="med-status">
-                    <div class="status-dot dot-active"></div>
-                    <div class="med-adherence">88%</div>
-                  </div>
-                </div>
-                <div class="med-card">
-                  <div class="med-icon">🟡</div>
-                  <div class="med-info">
-                    <div class="med-name">Vitamin D3 1000IU</div>
-                    <div class="med-dose">Once daily · With lunch</div>
-                    <div class="med-times">
-                      <span class="time-chip">1:00 PM</span>
-                    </div>
-                  </div>
-                  <div class="med-status">
-                    <div class="status-dot dot-active"></div>
-                    <div class="med-adherence">80%</div>
-                  </div>
-                </div>
+              <div class="med-list" id="tracker-med-list">
+                <!-- Dynamically loaded -->
               </div>
             </div>
             <div class="card">
@@ -1781,47 +1795,27 @@
         <div class="page-header">
           <div>
             <div class="page-title">📋 Health Reports</div>
-            <div class="page-subtitle">AI-generated health summaries and analytics</div>
+            <div class="page-subtitle">AI-generated health summaries and medical uploads</div>
           </div>
-          <button class="btn btn-primary">Generate Report</button>
+          <button class="btn btn-primary" onclick="document.getElementById('report-file-input').click()">📤 Upload Medication/Report</button>
+          <input type="file" id="report-file-input" accept=".png,.jpg,.jpeg,.pdf" onchange="uploadReport()" style="display:none" />
         </div>
         <div class="page-content">
           <div class="card">
-            <div class="card-header"><span class="card-title">Report History</span></div>
+            <div class="card-header"><span class="card-title">Report & Medication History</span></div>
             <div class="card-body" style="padding:0">
               <table class="data-table">
                 <thead>
                   <tr>
-                    <th>Report</th>
-                    <th>Period</th>
-                    <th>Generated</th>
+                    <th>Report / Document</th>
+                    <th>Type</th>
+                    <th>Uploaded / Generated</th>
                     <th>AI Insights</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td><strong>Monthly Health Summary</strong><br><span
-                        style="font-size:11px;color:var(--slate-light)">Vitals, medications, risk</span></td>
-                    <td>May 2026</td>
-                    <td>Jun 1, 2026</td>
-                    <td><span class="urgency-badge urgency-medium">3 insights</span></td>
-                    <td><button class="btn btn-outline" style="font-size:12px">Download PDF</button></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Monthly Health Summary</strong></td>
-                    <td>Apr 2026</td>
-                    <td>May 1, 2026</td>
-                    <td><span class="urgency-badge urgency-low">2 insights</span></td>
-                    <td><button class="btn btn-outline" style="font-size:12px">Download PDF</button></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Quarterly Risk Report</strong></td>
-                    <td>Q1 2026</td>
-                    <td>Apr 1, 2026</td>
-                    <td><span class="urgency-badge urgency-high">5 insights</span></td>
-                    <td><button class="btn btn-outline" style="font-size:12px">Download PDF</button></td>
-                  </tr>
+                  <!-- Dynamically populated -->
                 </tbody>
               </table>
             </div>
@@ -1834,45 +1828,49 @@
         <div class="page-header">
           <div>
             <div class="page-title">📍 Nearby Clinics</div>
-            <div class="page-subtitle">Healthcare facilities near you</div>
+            <div class="page-subtitle">Find hospitals, pharmacies, and doctors near you</div>
           </div>
         </div>
         <div class="page-content">
-          <div class="alert alert-info">
-            <span class="alert-icon">📍</span>
-            <div class="alert-content">Showing facilities near <strong>Ambarnath, Maharashtra</strong></div>
+          <!-- Location Control Panel -->
+          <div class="card" style="margin-bottom: 20px; padding: 20px;">
+            <div class="card-header" style="padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border);">
+              <span class="card-title">Set Search Location</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; align-items: flex-end;">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="margin-bottom: 6px;">Latitude</label>
+                <input type="number" step="any" id="clinic-lat" class="form-input" value="19.1825" />
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="margin-bottom: 6px;">Longitude</label>
+                <input type="number" step="any" id="clinic-lon" class="form-input" value="73.1926" />
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="margin-bottom: 6px;">Radius (km)</label>
+                <input type="range" min="1" max="20" step="1" id="clinic-radius" class="form-input" value="5" style="padding: 0; height: 38px; accent-color: var(--teal);" oninput="document.getElementById('radius-val').textContent = this.value + ' km'" />
+                <span id="radius-val" style="font-size: 11px; color: var(--slate-light); display: block; margin-top: 2px;">5 km</span>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" style="flex: 1; height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" onclick="getUserGeolocation()">
+                  <span>📍</span> GPS
+                </button>
+                <button class="btn btn-primary" style="flex: 1; height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" onclick="triggerClinicsSearch()">
+                  Search
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="med-list">
-            <div class="med-card">
-              <div class="med-icon">🏥</div>
-              <div class="med-info">
-                <div class="med-name">Kalyan General Hospital</div>
-                <div class="med-dose">3.2 km · Emergency available · Open 24hrs</div>
-                <div class="med-times"><span class="time-chip">Emergency</span><span class="time-chip">OPD</span><span
-                    class="time-chip">Diabetes Clinic</span></div>
-              </div>
-              <button class="btn btn-outline" style="font-size:12px">Directions</button>
-            </div>
-            <div class="med-card">
-              <div class="med-icon">🩺</div>
-              <div class="med-info">
-                <div class="med-name">Ambarnath Primary Health Centre</div>
-                <div class="med-dose">1.1 km · Government · Free consultation</div>
-                <div class="med-times"><span class="time-chip">Mon–Sat 9–5</span><span class="time-chip">Free</span>
-                </div>
-              </div>
-              <button class="btn btn-outline" style="font-size:12px">Directions</button>
-            </div>
-            <div class="med-card">
-              <div class="med-icon">💊</div>
-              <div class="med-info">
-                <div class="med-name">Medplus Pharmacy</div>
-                <div class="med-dose">0.4 km · Open until 11 PM</div>
-                <div class="med-times"><span class="time-chip">Pharmacy</span><span class="time-chip">Diagnostics</span>
-                </div>
-              </div>
-              <button class="btn btn-outline" style="font-size:12px">Directions</button>
-            </div>
+
+          <!-- Location Alert Banner -->
+          <div class="alert alert-info" id="clinic-location-banner" style="margin-bottom: 20px;">
+            <span class="alert-icon">📍</span>
+            <div class="alert-content" id="clinic-location-text">Showing facilities near <strong>Ambarnath, Maharashtra (19.1825, 73.1926)</strong></div>
+          </div>
+
+          <!-- Dynamic Clinics Container -->
+          <div class="med-list" id="clinics-container-list">
+            <!-- Dynamically populated -->
           </div>
         </div>
       </div>
@@ -1883,42 +1881,59 @@
           <div>
             <div class="page-title">👤 Health Profile</div>
           </div>
-          <button class="btn btn-primary">Save Changes</button>
+          <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
         </div>
         <div class="page-content">
           <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px">
             <div class="card" style="text-align:center;padding:28px">
-              <div
-                style="width:80px;height:80px;background:var(--mint);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:var(--teal);font-family:'Plus Jakarta Sans',sans-serif">
-                AR</div>
-              <div style="font-weight:700;font-size:16px">Arjun Rao</div>
-              <div style="color:var(--slate-light);font-size:13px;margin-top:4px">arjun.rao@email.com</div>
-              <div style="margin-top:12px;font-size:12px;color:var(--slate-mid)">Blood Type: <strong>O+</strong></div>
-              <button class="btn btn-outline" style="margin-top:16px;font-size:12px">Change Photo</button>
+              <div id="p-avatar-container"
+                style="width:80px;height:80px;background:var(--mint);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:var(--teal);font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden;position:relative;">
+                <span id="p-avatar-initials">AR</span>
+                <img id="p-avatar-img" src="" style="display:none;width:100%;height:100%;object-fit:cover;" />
+              </div>
+              <div id="p-card-name" style="font-weight:700;font-size:16px">Arjun Rao</div>
+              <div id="p-card-email" style="color:var(--slate-light);font-size:13px;margin-top:4px">arjun.rao@email.com</div>
+              <div id="p-card-blood" style="margin-top:12px;font-size:12px;color:var(--slate-mid)">Blood Type: <strong id="p-card-blood-val">O+</strong></div>
+              <input type="file" id="p-avatar-file-input" accept=".png,.jpg,.jpeg" onchange="uploadPhoto()" style="display:none" />
+              <button class="btn btn-outline" onclick="document.getElementById('p-avatar-file-input').click()" style="margin-top:16px;font-size:12px">Change Photo</button>
             </div>
             <div class="card">
               <div class="card-header"><span class="card-title">Personal Information</span></div>
               <div class="card-body">
                 <div class="form-grid">
-                  <div class="form-group"><label class="form-label">Full Name</label><input class="form-input"
+                  <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="p-full-name"
                       value="Arjun Rao" /></div>
-                  <div class="form-group"><label class="form-label">Date of Birth</label><input type="date"
+                  <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" id="p-dob"
                       class="form-input" value="1981-03-15" /></div>
-                  <div class="form-group"><label class="form-label">Gender</label><select class="form-input">
+                  <div class="form-group"><label class="form-label">Gender</label><select class="form-input" id="p-gender">
                       <option selected>Male</option>
                       <option>Female</option>
                       <option>Other</option>
                     </select></div>
-                  <div class="form-group"><label class="form-label">Phone</label><input class="form-input"
+                  <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="p-phone"
                       value="+91 98765 43210" /></div>
-                  <div class="form-group"><label class="form-label">Height (cm)</label><input type="number"
+                  <div class="form-group"><label class="form-label">Height (cm)</label><input type="number" id="p-height"
                       class="form-input" value="172" /></div>
-                  <div class="form-group"><label class="form-label">Weight (kg)</label><input type="number"
+                  <div class="form-group"><label class="form-label">Weight (kg)</label><input type="number" id="p-weight"
                       class="form-input" value="78" /></div>
-                  <div class="form-group"><label class="form-label">Emergency Contact</label><input class="form-input"
+                  <div class="form-group"><label class="form-label">Emergency Contact</label><input class="form-input" id="p-emergency-name"
                       value="Priya Rao (Wife)" /></div>
-                  <div class="form-group"><label class="form-label">Emergency Phone</label><input class="form-input"
+                  <div class="form-group"><label class="form-label">Emergency Phone</label><input class="form-input" id="p-emergency-phone"
                       value="+91 98765 00001" /></div>
+                  <div class="form-group"><label class="form-label">Blood Type</label><select class="form-input" id="p-blood-type">
+                      <option>A+</option>
+                      <option>A-</option>
+                      <option>B+</option>
+                      <option>B-</option>
+                      <option>AB+</option>
+                      <option>AB-</option>
+                      <option selected>O+</option>
+                      <option>O-</option>
+                    </select></div>
+                  <div class="form-group"><label class="form-label">Latitude</label><input type="number" step="any" id="p-latitude"
+                      class="form-input" value="19.1825" /></div>
+                  <div class="form-group"><label class="form-label">Longitude</label><input type="number" step="any" id="p-longitude"
+                      class="form-input" value="73.1926" /></div>
                 </div>
               </div>
             </div>
@@ -2028,6 +2043,18 @@
           n.classList.add('active');
         }
       });
+      
+      // Load reports if entering reports page
+      if (name === 'reports') {
+        loadReports();
+      } else if (name === 'dashboard') {
+        loadMedications();
+        loadRiskFromLatestReport();
+      } else if (name === 'medications') {
+        loadMedications();
+      } else if (name === 'clinics') {
+        triggerClinicsSearch();
+      }
     }
 
     // ── CHAT FUNCTIONALITY ──────────────────────────────────────────
@@ -2239,7 +2266,738 @@
       recs.push('Schedule a preventive health check-up in the next 3 months.');
       return recs.slice(0, 5);
     }
+
+    // ── TOAST NOTIFICATION ──────────────────────────────────────────
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('toast-notification');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.textContent = message;
+      
+      if (isSuccess) {
+        toast.style.borderLeftColor = 'var(--mint)';
+      } else {
+        toast.style.borderLeftColor = 'var(--coral)';
+      }
+      
+      toast.style.display = 'flex';
+      // Trigger layout reflow
+      toast.offsetHeight;
+      toast.style.bottom = '24px';
+      toast.style.opacity = '1';
+      
+      setTimeout(() => {
+        toast.style.bottom = '-100px';
+        toast.style.opacity = '0';
+        setTimeout(() => {
+          toast.style.display = 'none';
+        }, 400);
+      }, 3000);
+    }
+
+    // ── HEALTH PROFILE API PERSISTENCE ──────────────────────────────
+    async function loadProfile() {
+      try {
+        const response = await fetch("http://localhost:8000/health/profile");
+        if (!response.ok) throw new Error("Failed to load profile");
+        
+        const res = await response.json();
+        if (res.data) {
+          const d = res.data;
+          
+          // Update Form inputs
+          if (d.full_name) document.getElementById('p-full-name').value = d.full_name;
+          if (d.date_of_birth) document.getElementById('p-dob').value = d.date_of_birth;
+          if (d.gender) {
+            const genderCapitalized = d.gender.charAt(0).toUpperCase() + d.gender.slice(1);
+            document.getElementById('p-gender').value = genderCapitalized;
+          }
+          if (d.phone) document.getElementById('p-phone').value = d.phone;
+          if (d.height_cm) document.getElementById('p-height').value = d.height_cm;
+          if (d.weight_kg) document.getElementById('p-weight').value = d.weight_kg;
+          if (d.emergency_contact_name) document.getElementById('p-emergency-name').value = d.emergency_contact_name;
+          if (d.emergency_contact_phone) document.getElementById('p-emergency-phone').value = d.emergency_contact_phone;
+          if (d.blood_type) document.getElementById('p-blood-type').value = d.blood_type;
+          if (d.latitude !== undefined && d.latitude !== null) {
+            document.getElementById('p-latitude').value = d.latitude;
+            const cLat = document.getElementById('clinic-lat');
+            if (cLat) cLat.value = d.latitude;
+          }
+          if (d.longitude !== undefined && d.longitude !== null) {
+            document.getElementById('p-longitude').value = d.longitude;
+            const cLon = document.getElementById('clinic-lon');
+            if (cLon) cLon.value = d.longitude;
+          }
+          
+          // Update card & sidebar displays
+          updateProfileUI(d);
+        }
+      } catch (err) {
+        console.error("Error loading profile:", err);
+      }
+    }
+
+    function updateProfileUI(d) {
+      const firstName = d.full_name ? d.full_name.split(' ')[0] : 'User';
+      document.getElementById('welcome-username').textContent = `Good morning, ${firstName} 👋`;
+      
+      document.getElementById('sidebar-user-name').textContent = d.full_name || 'User';
+      
+      document.getElementById('p-card-name').textContent = d.full_name || 'User';
+      document.getElementById('p-card-email').textContent = d.email || '';
+      document.getElementById('p-card-blood-val').textContent = d.blood_type || '—';
+      
+      const initials = d.full_name ? d.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U';
+      document.getElementById('p-avatar-initials').textContent = initials;
+      document.getElementById('sidebar-avatar-initials').textContent = initials;
+      
+      const pImg = document.getElementById('p-avatar-img');
+      const sImg = document.getElementById('sidebar-avatar-img');
+      const pInitials = document.getElementById('p-avatar-initials');
+      const sInitials = document.getElementById('sidebar-avatar-initials');
+      
+      if (d.profile_picture) {
+        const cacheBusterUrl = `${d.profile_picture}?t=${new Date().getTime()}`;
+        pImg.src = cacheBusterUrl;
+        sImg.src = cacheBusterUrl;
+        pImg.style.display = 'block';
+        sImg.style.display = 'block';
+        pInitials.style.display = 'none';
+        sInitials.style.display = 'none';
+      } else {
+        pImg.style.display = 'none';
+        sImg.style.display = 'none';
+        pInitials.style.display = 'inline';
+        sInitials.style.display = 'inline';
+      }
+    }
+
+    async function saveProfile() {
+      const full_name = document.getElementById('p-full-name').value;
+      const date_of_birth = document.getElementById('p-dob').value;
+      const gender = document.getElementById('p-gender').value;
+      const phone = document.getElementById('p-phone').value;
+      const height_cm = parseFloat(document.getElementById('p-height').value) || null;
+      const weight_kg = parseFloat(document.getElementById('p-weight').value) || null;
+      const emergency_contact_name = document.getElementById('p-emergency-name').value;
+      const emergency_contact_phone = document.getElementById('p-emergency-phone').value;
+      const blood_type = document.getElementById('p-blood-type').value;
+      const latitude = parseFloat(document.getElementById('p-latitude').value) || null;
+      const longitude = parseFloat(document.getElementById('p-longitude').value) || null;
+
+      try {
+        const response = await fetch("http://localhost:8000/health/profile", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            full_name,
+            date_of_birth,
+            gender,
+            phone,
+            height_cm,
+            weight_kg,
+            emergency_contact_name,
+            emergency_contact_phone,
+            blood_type,
+            latitude,
+            longitude
+          })
+        });
+
+        if (!response.ok) throw new Error("Failed to save profile");
+        
+        showToast("Profile data saved successfully!");
+        await loadProfile();
+      } catch (err) {
+        console.error("Error saving profile:", err);
+        showToast("Failed to save profile.", false);
+      }
+    }
+
+    async function uploadPhoto() {
+      const fileInput = document.getElementById('p-avatar-file-input');
+      if (!fileInput.files || fileInput.files.length === 0) return;
+      
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      try {
+        const response = await fetch("http://localhost:8000/health/profile/photo", {
+          method: "POST",
+          body: formData
+        });
+        
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.detail || "Failed to upload photo");
+        }
+        
+        showToast("Profile picture updated!");
+        await loadProfile();
+      } catch (err) {
+        console.error("Error uploading photo:", err);
+        showToast(err.message || "Failed to upload photo.", false);
+      }
+    }
+
+    let uploadedReports = [];
+
+    async function loadReports() {
+      try {
+        const response = await fetch("http://localhost:8000/reports/");
+        if (!response.ok) throw new Error("Failed to load reports");
+        const data = await response.json();
+        uploadedReports = data.reports || [];
+        renderReportsTable(uploadedReports);
+      } catch (err) {
+        console.error("Error loading reports:", err);
+      }
+    }
+
+    function renderReportsTable(reports) {
+      const tbody = document.querySelector('#page-reports tbody');
+      if (!tbody) return;
+      
+      if (!reports || reports.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align:center;padding:32px;color:var(--slate-light)">
+              <div style="font-size:32px;margin-bottom:8px">📋</div>
+              <strong>No reports found</strong><br>Upload a medication list or health report to get started.
+            </td>
+          </tr>`;
+        return;
+      }
+      
+      tbody.innerHTML = reports.map(r => {
+        const dateStr = new Date(r.generated_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+        
+        const insights = r.ai_insights || {};
+        const list = insights.insights || [];
+        const count = list.length;
+        const urgency = insights.urgency || 'low';
+        
+        let urgencyClass = 'urgency-low';
+        if (urgency === 'medium') urgencyClass = 'urgency-medium';
+        else if (urgency === 'high') urgencyClass = 'urgency-high';
+        else if (urgency === 'emergency') urgencyClass = 'urgency-emergency';
+        
+        let actionBtn = '';
+        if (r.file_path) {
+          actionBtn = `<a href="${r.file_path}" target="_blank" class="btn btn-outline" style="font-size:12px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">View File</a>`;
+        } else {
+          actionBtn = `<button class="btn btn-outline" style="font-size:12px" onclick="downloadPdfReport('${r.id}')">Download PDF</button>`;
+        }
+        
+        return `
+          <tr style="cursor:pointer;" onclick="viewReportDetails('${r.id}')">
+            <td>
+              <strong>${r.summary || 'Medical Report'}</strong>
+            </td>
+            <td style="text-transform: capitalize;">${r.report_type === 'monthly' ? 'Monthly Summary' : (r.report_type === 'medication' ? 'Medication List' : 'Lab Report')}</td>
+            <td>${dateStr}</td>
+            <td>
+              <span class="urgency-badge ${urgencyClass}" onclick="event.stopPropagation(); viewReportDetails('${r.id}')">
+                ${count} insight${count !== 1 ? 's' : ''}
+              </span>
+            </td>
+            <td onclick="event.stopPropagation()">${actionBtn}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function viewReportDetails(id) {
+      const report = uploadedReports.find(r => r.id === id);
+      if (!report) return;
+      
+      const modal = document.getElementById('insights-modal');
+      const titleEl = document.getElementById('insights-modal-title');
+      const bodyEl = document.getElementById('insights-modal-body');
+      
+      titleEl.textContent = report.summary || 'AI Insights & Details';
+      
+      const insights = report.ai_insights || {};
+      const list = insights.insights || [];
+      const urgency = insights.urgency || 'low';
+      
+      let insightsHtml = '';
+      if (list.length === 0) {
+        insightsHtml = '<p style="color:var(--slate-light);">No insights detected or analysis is still pending.</p>';
+      } else {
+        insightsHtml = '<ul style="padding-left:20px;margin-top:10px;">' + 
+          list.map(ins => `<li style="margin-bottom:8px;line-height:1.4;">${ins}</li>`).join('') + 
+          '</ul>';
+      }
+      
+      let fileLinkHtml = '';
+      if (report.file_path) {
+        fileLinkHtml = `
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:var(--slate-light)">Document: ${report.report_type === 'medication' ? 'Medication List' : 'Lab Report'}</span>
+            <a href="${report.file_path}" target="_blank" class="btn btn-primary" style="font-size:12px;text-decoration:none;">View Original File</a>
+          </div>
+        `;
+      }
+      
+      let urgencyBadge = '';
+      let urgencyClass = 'urgency-low';
+      if (urgency === 'medium') urgencyClass = 'urgency-medium';
+      else if (urgency === 'high') urgencyClass = 'urgency-high';
+      else if (urgency === 'emergency') urgencyClass = 'urgency-emergency';
+      urgencyBadge = `<span class="urgency-badge ${urgencyClass}" style="margin-left:10px;text-transform:uppercase;">${urgency} urgency</span>`;
+      
+      bodyEl.innerHTML = `
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;margin-bottom:12px;">
+            <strong>Document Analysis</strong>
+            ${urgencyBadge}
+          </div>
+          <p style="background:var(--off-white);padding:12px;border-radius:8px;border-left:4px solid var(--teal);font-size:13px;line-height:1.4;margin:0 0 16px 0;">
+            ${insights.summary || report.summary || 'No summary available.'}
+          </p>
+        </div>
+        <div>
+          <strong>AI Insights & Recommendations:</strong>
+          ${insightsHtml}
+        </div>
+        ${fileLinkHtml}
+      `;
+      
+      modal.style.display = 'flex';
+      modal.offsetHeight; // force layout reflow
+      modal.classList.add('active');
+    }
+
+    function closeInsightsModal(event) {
+      const modal = document.getElementById('insights-modal');
+      modal.classList.remove('active');
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 250);
+    }
+
+    async function uploadReport() {
+      const fileInput = document.getElementById('report-file-input');
+      if (!fileInput.files || fileInput.files.length === 0) return;
+      
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      showToast("Uploading and analyzing document with AI...", true);
+      
+      try {
+        const response = await fetch("http://localhost:8000/reports/upload", {
+          method: "POST",
+          body: formData
+        });
+        
+        if (!response.ok) {
+          const errData = await response.json();
+          throw new Error(errData.detail || "Failed to upload and analyze report.");
+        }
+        
+        const res = await response.json();
+        showToast("Report uploaded & AI insights generated!");
+        
+        await loadReports();
+        await loadMedications();
+        await loadRiskFromLatestReport();
+        
+        if (res.report && res.report.id) {
+          viewReportDetails(res.report.id);
+        }
+      } catch (err) {
+        console.error("Error uploading report:", err);
+        showToast(err.message || "Failed to upload report.", false);
+      } finally {
+        fileInput.value = '';
+      }
+    }
+
+    async function downloadPdfReport() {
+      try {
+        showToast("Generating PDF report...", true);
+        window.open("http://localhost:8000/reports/generate", "_blank");
+      } catch (err) {
+        console.error("Error generating PDF:", err);
+        showToast("Failed to generate PDF report.", false);
+      }
+    }
+
+    async function loadMedications() {
+      try {
+        const response = await fetch("http://localhost:8000/medications/");
+        if (!response.ok) throw new Error("Failed to load medications");
+        const data = await response.json();
+        const meds = data.medications || [];
+        
+        renderMedicationsDashboard(meds);
+        renderMedicationsTracker(meds);
+      } catch (err) {
+        console.error("Error loading medications:", err);
+      }
+    }
+
+    function renderMedicationsDashboard(meds) {
+      const dbList = document.getElementById('dashboard-med-list');
+      const takenSummary = document.getElementById('meds-taken-summary');
+      if (!dbList) return;
+      
+      if (meds.length === 0) {
+        dbList.innerHTML = `
+          <div style="text-align:center;padding:20px;color:var(--slate-light);font-size:13px;">
+            No active medications logged.
+          </div>`;
+        if (takenSummary) takenSummary.textContent = "0 active";
+        return;
+      }
+      
+      let takenCount = 0;
+      let totalDoses = 0;
+      
+      dbList.innerHTML = meds.map(m => {
+        const times = m.reminder_times || ["08:00 AM"];
+        const freqText = m.frequency || "Once daily";
+        const dosageText = m.dosage || "";
+        
+        const timeChips = times.map((t, idx) => {
+          totalDoses++;
+          // First dose marked taken as a visual dashboard indicator
+          const isTaken = idx === 0 && times.length > 1 || times.length === 1;
+          if (isTaken) takenCount++;
+          
+          return `<span class="time-chip" style="${isTaken ? '' : 'background:rgba(232,96,76,0.1);color:var(--coral)'}">${t}${isTaken ? ' ✓' : ''}</span>`;
+        }).join('');
+        
+        let icon = "💊";
+        if (m.name.toLowerCase().includes("vitamin") || m.name.toLowerCase().includes("calcium")) icon = "🩺";
+        else if (m.name.toLowerCase().includes("insulin") || m.name.toLowerCase().includes("injection") || m.name.toLowerCase().includes("amlodipine")) icon = "💉";
+        
+        return `
+          <div class="med-card" style="border-left: 3px solid var(--success)">
+            <div class="med-icon">${icon}</div>
+            <div class="med-info">
+              <div class="med-name">${m.name} ${dosageText}</div>
+              <div class="med-dose">${freqText}</div>
+              <div class="med-times">${timeChips}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      if (takenSummary) {
+        takenSummary.textContent = `${takenCount} of ${totalDoses} doses taken`;
+      }
+    }
+
+    function renderMedicationsTracker(meds) {
+      const trackerList = document.getElementById('tracker-med-list');
+      const subtitle = document.getElementById('tracker-active-meds-subtitle');
+      if (!trackerList) return;
+      
+      if (subtitle) {
+        subtitle.textContent = `${meds.length} active medication${meds.length !== 1 ? 's' : ''}`;
+      }
+      
+      if (meds.length === 0) {
+        trackerList.innerHTML = `
+          <div style="text-align:center;padding:40px;color:var(--slate-light)">
+            <div style="font-size:32px;margin-bottom:8px">💊</div>
+            <strong>No active medications</strong><br>Add a medication or upload a report to start tracking.
+          </div>`;
+        return;
+      }
+      
+      trackerList.innerHTML = meds.map(m => {
+        const times = m.reminder_times || ["08:00 AM"];
+        const freqText = m.frequency || "Once daily";
+        const dosageText = m.dosage || "";
+        
+        const timeChips = times.map(t => `<span class="time-chip">${t}</span>`).join('');
+        
+        let icon = "💊";
+        if (m.name.toLowerCase().includes("vitamin") || m.name.toLowerCase().includes("calcium")) icon = "🩺";
+        else if (m.name.toLowerCase().includes("insulin") || m.name.toLowerCase().includes("injection") || m.name.toLowerCase().includes("amlodipine")) icon = "💉";
+        
+        return `
+          <div class="med-card">
+            <div class="med-icon">${icon}</div>
+            <div class="med-info">
+              <div class="med-name">${m.name} ${dosageText}</div>
+              <div class="med-dose">${freqText}</div>
+              <div class="med-times">${timeChips}</div>
+            </div>
+            <div class="med-status">
+              <div class="status-dot dot-active"></div>
+              <div class="med-adherence">90%</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadRiskFromLatestReport() {
+      try {
+        const response = await fetch("http://localhost:8000/reports/");
+        if (!response.ok) throw new Error("Failed to load reports");
+        const data = await response.json();
+        const reports = data.reports || [];
+        
+        if (reports.length > 0) {
+          const latestWithRisks = reports.find(r => r.ai_insights && r.ai_insights.risks);
+          if (latestWithRisks) {
+            const risks = latestWithRisks.ai_insights.risks;
+            updateDashboardRiskSummary(risks);
+            return;
+          }
+        }
+        
+        // Default baseline values
+        updateDashboardRiskSummary({
+          diabetes: 0.42,
+          hypertension: 0.35,
+          heart: 0.22,
+          cholesterol: 0.18,
+          kidney: 0.15,
+          liver: 0.12
+        });
+      } catch (err) {
+        console.error("Error loading risks:", err);
+      }
+    }
+
+    function updateDashboardRiskSummary(risks) {
+      const riskIds = {
+        diabetes: 'db-risk-diabetes',
+        hypertension: 'db-risk-hypertension',
+        heart: 'db-risk-heart',
+        cholesterol: 'db-risk-cholesterol',
+        kidney: 'db-risk-kidney',
+        liver: 'db-risk-liver'
+      };
+      
+      let totalSum = 0;
+      let count = 0;
+      
+      for (const [key, elementId] of Object.entries(riskIds)) {
+        const el = document.getElementById(elementId);
+        if (el) {
+          const val = risks[key] !== undefined ? risks[key] : 0.10;
+          const pct = Math.round(val * 100);
+          el.textContent = pct + '%';
+          
+          el.classList.remove('risk-low', 'risk-moderate', 'risk-high');
+          
+          if (pct >= 50) {
+            el.classList.add('risk-high');
+            el.style.color = 'var(--coral)';
+          } else if (pct >= 25) {
+            el.classList.add('risk-moderate');
+            el.style.color = '#FED330';
+          } else {
+            el.classList.add('risk-low');
+            el.style.color = 'var(--success)';
+          }
+          
+          totalSum += pct;
+          count++;
+        }
+      }
+      
+      const overallPct = count > 0 ? Math.round(totalSum / count) : 0;
+      
+      const valEl = document.getElementById('db-overall-risk-val');
+      const lvlEl = document.getElementById('db-overall-risk-lvl');
+      if (valEl) valEl.textContent = overallPct + '%';
+      if (lvlEl) {
+        if (overallPct >= 50) {
+          lvlEl.textContent = 'HIGH RISK';
+          lvlEl.style.fill = 'var(--coral)';
+        } else if (overallPct >= 25) {
+          lvlEl.textContent = 'MODERATE RISK';
+          lvlEl.style.fill = '#FED330';
+        } else {
+          lvlEl.textContent = 'LOW RISK';
+          lvlEl.style.fill = 'var(--success)';
+        }
+      }
+      
+      const gaugePath = document.getElementById('db-risk-gauge-path');
+      if (gaugePath) {
+        const offset = Math.max(0, Math.min(204, 204 * (1 - overallPct / 100)));
+        gaugePath.style.transition = 'stroke-dashoffset 1s ease-in-out';
+        gaugePath.style.strokeDashoffset = offset;
+      }
+    }
+
+    async function loadClinics(lat, lon, radiusKm) {
+      const container = document.getElementById('clinics-container-list');
+      const bannerText = document.getElementById('clinic-location-text');
+      if (!container) return;
+      
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px;color:var(--slate-light)">
+          <div class="loading-dots" style="margin-bottom:15px;"><span></span><span></span><span></span></div>
+          Scanning nearby healthcare facilities...
+        </div>`;
+        
+      const radiusMeters = radiusKm * 1000;
+      
+      try {
+        const response = await fetch(`http://localhost:8000/clinics/nearby?lat=${lat}&lon=${lon}&radius=${radiusMeters}`);
+        if (!response.ok) throw new Error("Failed to load clinics");
+        const data = await response.json();
+        
+        if (data.error) {
+          throw new Error(data.error);
+        }
+        
+        const clinics = data.clinics || [];
+        
+        if (bannerText) {
+          bannerText.innerHTML = `Showing facilities near <strong>${lat.toFixed(4)}, ${lon.toFixed(4)}</strong> within a <strong>${radiusKm} km</strong> radius`;
+        }
+        
+        if (clinics.length === 0) {
+          container.innerHTML = `
+            <div style="text-align:center;padding:40px;color:var(--slate-light)">
+              <span style="font-size:32px;display:block;margin-bottom:12px;">🏥</span>
+              <strong>No facilities found</strong><br>Try increasing the search radius or setting different coordinates.
+            </div>`;
+          return;
+        }
+        
+        container.innerHTML = clinics.map(c => {
+          let icon = "🏥"; // default hospital
+          if (c.type === "pharmacy") icon = "💊";
+          else if (c.type === "doctors") icon = "🩺";
+          else if (c.type === "dentist") icon = "🦷";
+          
+          let details = [];
+          if (c.address) details.push(c.address);
+          if (c.phone) details.push(`📞 ${c.phone}`);
+          if (c.opening_hours) details.push(`🕒 ${c.opening_hours}`);
+          
+          const detailsStr = details.join(' · ') || 'No address details available';
+          
+          // Badge list
+          let badges = [];
+          if (c.type) {
+            const typeLabel = c.type.charAt(0).toUpperCase() + c.type.slice(1);
+            badges.push(`<span class="time-chip" style="text-transform: capitalize;">${typeLabel}</span>`);
+          }
+          if (c.emergency) {
+            badges.push(`<span class="time-chip" style="background:rgba(232,96,76,0.1);color:var(--coral)">Emergency Service</span>`);
+          }
+          if (c.wheelchair === "yes") {
+            badges.push(`<span class="time-chip" style="background:rgba(38,222,129,0.1);color:var(--mint)">♿ Accessible</span>`);
+          }
+          
+          const badgeHtml = badges.join('');
+          
+          // Directions link to google maps
+          const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.name + ' ' + (c.address || ''))}`;
+          
+          return `
+            <div class="med-card">
+              <div class="med-icon">${icon}</div>
+              <div class="med-info">
+                <div class="med-name">${c.name}</div>
+                <div class="med-dose">${detailsStr}</div>
+                <div class="med-times">${badgeHtml}</div>
+              </div>
+              <a href="${directionsUrl}" target="_blank" class="btn btn-outline" style="font-size:12px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Directions</a>
+            </div>
+          `;
+        }).join('');
+        
+      } catch (err) {
+        console.error("Error loading clinics:", err);
+        container.innerHTML = `
+          <div style="text-align:center;padding:40px;color:var(--slate-light)">
+            <span style="font-size:32px;display:block;margin-bottom:12px;">⚠️</span>
+            <strong>Failed to retrieve nearby facilities</strong><br>${err.message || 'Service temporarily unavailable'}.
+          </div>`;
+      }
+    }
+    
+    function getUserGeolocation() {
+      if (!navigator.geolocation) {
+        showToast("Geolocation is not supported by your browser.", false);
+        return;
+      }
+      
+      showToast("Requesting device GPS coordinates...", true);
+      
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          document.getElementById('clinic-lat').value = lat.toFixed(6);
+          document.getElementById('clinic-lon').value = lon.toFixed(6);
+          
+          showToast("GPS location updated successfully!");
+          triggerClinicsSearch();
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          let errMsg = "Unable to retrieve your location.";
+          if (error.code === error.PERMISSION_DENIED) {
+            errMsg = "GPS permission denied. Please enter coordinates manually.";
+          }
+          showToast(errMsg, false);
+        },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    }
+    
+    function triggerClinicsSearch() {
+      const latVal = parseFloat(document.getElementById('clinic-lat').value);
+      const lonVal = parseFloat(document.getElementById('clinic-lon').value);
+      const radVal = parseFloat(document.getElementById('clinic-radius').value);
+      
+      if (isNaN(latVal) || isNaN(lonVal)) {
+        showToast("Please enter valid latitude and longitude coordinates.", false);
+        return;
+      }
+      
+      loadClinics(latVal, lonVal, radVal);
+    }
+
+    // Load profile on DOM content loaded
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProfile();
+      loadReports();
+      loadMedications();
+      loadRiskFromLatestReport();
+    });
   </script>
+
+  <!-- AI Insights Modal -->
+  <div id="insights-modal" class="modal-overlay" style="display:none;" onclick="closeInsightsModal(event)">
+    <div class="modal-container" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="insights-modal-title">AI Insights & Report Details</div>
+        <button class="modal-close" onclick="closeInsightsModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="insights-modal-body">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notification" style="display:none;position:fixed;bottom:-100px;right:24px;background:rgba(11, 79, 108, 0.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:white;padding:16px 24px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.15);z-index:9999;align-items:center;gap:12px;font-family:'Inter',sans-serif;font-weight:500;font-size:14px;border-left:4px solid var(--mint);transition:bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;opacity:0;">
+    <span style="font-size:18px;color:var(--mint)">✓</span>
+    <span id="toast-message">Profile data saved successfully!</span>
+  </div>
 </body>
 
 </html>

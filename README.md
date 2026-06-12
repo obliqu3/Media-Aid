@@ -35,13 +35,13 @@ MediAid is a production-ready AI-powered health assistant that helps underserved
 |---|---------|-------------|
 | 1 | AI Symptom Checker | NLP-powered symptom analysis with urgency triage |
 | 2 | Medication Tracker | Smart reminders with adherence analytics |
-| 3 | Health Dashboard | Vitals tracking with trend visualization |
+| 3 | Health Dashboard | Vitals tracking with trend visualization, including dynamic kidney and liver risk tracking |
 | 4 | Risk Prediction | ML model predicting diabetes/hypertension risk |
-| 5 | Nearby Clinics | Geo-location based clinic and pharmacy finder |
+| 5 | Nearby Clinics | Location-based clinic and pharmacy finder with browser GPS geolocation, manual coordinate inputs, and profile location correlation |
 | 6 | Multi-language Support | English, Hindi, Swahili (Gemini translation) |
-| 7 | Health Reports | AI-generated PDF health summaries |
+| 7 | Health Reports | Clinical document uploads (PDF/image) parsed via Gemini AI with automated medication tracking sync and health risk metrics extraction |
 | 8 | Emergency SOS | One-tap emergency contact with location sharing |
-| 9 | Health Profile | Comprehensive personal health record |
+| 9 | Health Profile | Comprehensive personal health record including saved geolocation coordinates |
 | 10 | Analytics Admin | Aggregated anonymized population health trends |
 
 ---
@@ -178,16 +178,17 @@ VITE_FIREBASE_API_KEY=your_firebase_web_key
 |--------|---------|-------------|
 | POST | `/auth/register` | Register new user |
 | POST | `/auth/login` | Login & get JWT |
-| GET | `/health/profile` | Get health profile |
-| PUT | `/health/profile` | Update health profile |
+| GET | `/health/profile` | Get health profile (returns details including latitude and longitude) |
+| PUT | `/health/profile` | Update health profile (allows saving latitude and longitude) |
 | POST | `/health/vitals` | Log vitals reading |
 | GET | `/health/vitals` | Get vitals history |
 | POST | `/ai/chat` | AI symptom chat |
 | POST | `/ai/risk-assessment` | Predict health risk |
 | GET | `/medications` | List medications |
 | POST | `/medications` | Add medication |
-| GET | `/reports/generate` | Generate health report |
-| GET | `/clinics/nearby` | Find nearby clinics |
+| GET | `/reports/generate` | Generate health report PDF |
+| POST | `/reports/upload` | Upload and parse medical reports/prescriptions with automated medication/risk extraction |
+| GET | `/clinics/nearby` | Find nearby clinics using Overpass API (requires lat, lon, and radius) |
 
 ---
 

@@ -11,6 +11,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -39,6 +40,23 @@ async def lifespan(app: FastAPI):
                 ON CONFLICT (firebase_uid) DO NOTHING
             """)
         )
+        # Add latitude and longitude columns if they don't exist
+        await conn.execute(
+            text("ALTER TABLE health_profiles ADD COLUMN IF NOT EXISTS latitude DECIMAL(9,6);")
+        )
+        await conn.execute(
+            text("ALTER TABLE health_profiles ADD COLUMN IF NOT EXISTS longitude DECIMAL(9,6);")
+        )
+        # Seed health profile with location coordinates for Arjun Rao
+        await conn.execute(
+            text("""
+                INSERT INTO health_profiles (user_id, height_cm, weight_kg, blood_type, latitude, longitude)
+                VALUES ('00000000-0000-0000-0000-000000000000', 172, 78, 'O+', 19.1825, 73.1926)
+                ON CONFLICT (user_id) DO UPDATE
+                SET latitude = COALESCE(health_profiles.latitude, 19.1825),
+                    longitude = COALESCE(health_profiles.longitude, 73.1926)
+            """)
+        )
     logger.info("✅ Database tables ready")
     yield
     logger.info("🛑 MediAid API shutting down...")
@@ -61,6 +79,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ── Serve Uploaded Photos ─────────────────────────────────────────────────────
+uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
+os.makedirs(uploads_dir, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 # ── ROUTERS ───────────────────────────────────────────────────────────────────
 app.include_router(auth.router,        prefix="/auth",        tags=["Authentication"])
